@@ -4,9 +4,12 @@ import random
 import os
 
 import pygame
+from scripts.dialogue import Dialogue
 from scripts.portrait import Emotion, Portrait
+from scripts.scene import Scene
+from scripts.scene_manager import SceneManager
 
-from scripts.utils import load_image, load_images, Animation
+from scripts.utils import HEIGHT, WIDTH, load_image, load_images, Animation
 from scripts.utils import PORTRAIT_SCALE
 # from scripts.entities import PhysicsEntity, Player, Enemy
 # from scripts.sparks import Spark
@@ -19,9 +22,10 @@ from scripts.utils import PORTRAIT_SCALE
 class Game:
     def __init__(self):
         pygame.init()
+        pygame.font.init()
 
         pygame.display.set_caption('ninja game')
-        self.screen = pygame.display.set_mode((1000, 750), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
         self.clock = pygame.time.Clock()
 
@@ -63,6 +67,14 @@ class Game:
         # self.sfx['hit'].set_volume(0.8)
         # self.sfx['dash'].set_volume(0.3)
         # self.sfx['jump'].set_volume(0.7)
+        
+        self.test_dialogue = Dialogue("hello friend", "Webster", 72, Portrait(self.assets["mudkip"], self.assets["frames"][0]), Portrait(self.assets["mudkip"], self.assets["frames"][1]))
+        self.test_dialogue2 = Dialogue("kill yourself", "Wingdings", 72, Portrait(self.assets["mudkip"], self.assets["frames"][0]), Portrait(self.assets["mudkip"], self.assets["frames"][1]))
+        self.test_scene2 = Scene(self.test_dialogue2)
+        self.test_scene = Scene(self.test_dialogue, next=self.test_scene2)
+        self.test_scene2.next = self.test_scene
+        
+        self.test_scene_manager = SceneManager(self.test_scene)
 
 
     def run(self):
@@ -72,14 +84,10 @@ class Game:
         # pygame.mixer.music.play(-1)
 
         # self.sfx['ambience'].play(-1)
-        current_portrait = 0
-        other_portrait = 5
 
         while True:
             self.screen.fill((255,255,0))
             
-            portrait = Portrait(self.assets["mudkip"], self.assets["frames"][0])
-            portrait2 = Portrait(self.assets["mudkip"], self.assets["frames"][1])
             L = []
             for emo in Emotion:
                 L.append(emo)
@@ -94,12 +102,11 @@ class Game:
                         pygame.quit()
                         sys.exit()
                     if event.key == pygame.K_a:
-                        current_portrait = (current_portrait + 1) % 13
-                        other_portrait = (other_portrait + 1) % 13
+                        self.test_scene_manager.next_scene()
                 if event.type == pygame.KEYUP:
                     pass
-            for i in range(0, 3):
-                self.screen.blit(portrait.getPortraitWithFrame(L[current_portrait]), (0,250*i))
+                
+            self.screen.blit(self.test_scene_manager.get_surface(), (0,HEIGHT-500))
             
             # self.screen.blit(portrait2.getPortraitWithFrame(L[other_portrait]), (250,250))
 
