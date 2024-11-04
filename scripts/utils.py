@@ -4,13 +4,14 @@ import os
 
 BASE_IMG_PATH = 'data/images/'
 
-PORTRAIT_SCALE = (200,200)
-HEIGHT = 750
-WIDTH = 1000
+HEIGHT = 720
+WIDTH = 1280
 
-def load_image(path):
+def load_image(path, scale=None):
     img = pygame.image.load(BASE_IMG_PATH + path).convert()
     img.set_colorkey((0, 0, 0))
+    if scale is not None:
+        img = pygame.transform.scale(img, scale)
     return img
 
 def load_images(path, scale:tuple=None):

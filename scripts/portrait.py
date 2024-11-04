@@ -22,9 +22,12 @@ class Gender(Enum):
     FEMALE = 1
     
 class Portrait():
-    def __init__(self, images, frame=None):
-        self.images = images
+    def __init__(self, game, name, frame=None):
+        self.game = game
+        self.name = name
         self.frame = frame
+        self.images = game.assets[name]
+        self.frame = game.assets['frame'][frame]
         
     def getPortrait(self, emo: Emotion):
         return self.images[emo.value]
