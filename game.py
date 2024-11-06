@@ -8,6 +8,7 @@ from scripts.dialogue import Dialogue
 from scripts.portrait import Emotion, Portrait
 from scripts.scene import Scene
 from scripts.scene_manager import SceneManager
+from scripts.text import Text
 
 from scripts.utils import HEIGHT, WIDTH, load_image, load_images
 # from scripts.entities import PhysicsEntity, Player, Enemy
@@ -29,10 +30,9 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.assets = {
-            'mudkip': load_images('portraits/mudkip', (67,67)),
-            'frame': load_images('frames', (80,80)),
+            'mudkip': load_images('portraits/mudkip', (200,200)),
+            'frame': load_images('frames', (240,240)),
             'field': load_image('backgrounds/field_background.png', (1280,720)),
-            # 'grass': load_images('tiles/grass'),
         }
 
         # import sfx
@@ -41,7 +41,10 @@ class Game:
         }
         # self.sfx['ambience'].set_volume(0.2)
         
-        self.test_scene = Scene(self, Dialogue(portrait1=Portrait(self, 'mudkip', 0), portrait2=Portrait(self, 'mudkip', 0)), 'field')
+        self.test_scene = Scene(self, Dialogue(portrait1=Portrait(self, 'mudkip', 0), portrait2=Portrait(self, 'mudkip', 0), text=Text(True, 'mudkip', 'otherkip', ["what do you think your doing?", 'im chillin dawg.'])), 'field')
+        self.test_scene2 = Scene(self, Dialogue(portrait1=Portrait(self, 'mudkip', 1), portrait2=Portrait(self, 'mudkip', 0), text=Text(True, 'mudkip', 'shitkip', ["this is a new scene.", 'whoa so neat'])), background=None)
+        
+        self.test_scene.next = self.test_scene2
         
         self.test_scene_manager = SceneManager(self.test_scene)
 
@@ -57,11 +60,6 @@ class Game:
         while True:
             self.screen.fill((255,255,0))
             
-            L = []
-            for emo in Emotion:
-                L.append(emo)
-                
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -72,9 +70,12 @@ class Game:
                         sys.exit()
                     if event.key == pygame.K_a:
                         self.test_scene_manager.next_scene()
+                    if event.key == pygame.K_SPACE:
+                        self.test_scene_manager.next_text()
                 if event.type == pygame.KEYUP:
                     pass
-                
+            
+            self.test_scene_manager.update_scene()
             self.screen.blit(self.test_scene_manager.get_surface(), (0,0))
             
             # self.screen.blit(portrait2.getPortraitWithFrame(L[other_portrait]), (250,250))
